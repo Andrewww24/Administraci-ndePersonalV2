@@ -3,5 +3,56 @@
 @{
     ViewData["Title"] = "Detalle del oferente";
 }
-@* TODO Core9 (Fran): Implementar detalle de oferente + botón "Crear empleado" *@
-<p>Core9 — Detalle de oferente pendiente de implementar.</p>
+
+<h2>Detalle del oferente</h2>
+
+@if (!string.IsNullOrEmpty(Model.MensajeExito))
+{
+    <div class="alert alert-success" role="alert">
+        @Model.MensajeExito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.ErrorMessage
+    </div>
+}
+
+@if (Model.Oferente is not null)
+{
+    var oferente = Model.Oferente;
+    <div class="card">
+        <div class="card-header">
+            Información
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Identificación</dt>
+                <dd class="col-sm-9">@oferente.Identificacion (@oferente.TipoIdentificacion)</dd>
+
+                <dt class="col-sm-3">Nombre completo</dt>
+                <dd class="col-sm-9">@oferente.NombreCompleto</dd>
+
+                <dt class="col-sm-3">Fecha de nacimiento</dt>
+                <dd class="col-sm-9">@oferente.FechaNacimiento.ToString("dd/MM/yyyy")</dd>
+
+                <dt class="col-sm-3">Dirección</dt>
+                <dd class="col-sm-9">@(oferente.Direccion ?? "—")</dd>
+
+                <dt class="col-sm-3">Fecha de registro</dt>
+                <dd class="col-sm-9">@oferente.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <form method="post" asp-page-handler="CrearEmpleado" class="d-inline">
+            <input type="hidden" asp-for="IdOferente" />
+            <input type="hidden" asp-for="IdPuesto" />
+            <button type="submit" class="btn btn-primary">Crear empleado</button>
+        </form>
+        <a class="btn btn-secondary" asp-page="/Oferentes/Index" asp-route-idPuesto="@Model.IdPuesto">Cancelar</a>
+    </div>
+}

@@ -1,4 +1,8 @@
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using AdministracionPersonal.Core.Models;
+using AdministracionPersonal.Core.Services;
 
 namespace AdministracionPersonal.Core.Pages.Puestos;
 
@@ -9,15 +13,38 @@ namespace AdministracionPersonal.Core.Pages.Puestos;
 /// </summary>
 public class IndexModel : PageModel
 {
-    // TODO Core6 (Fran): Implementar lógica de listado.
-    // 1. En OnGetAsync(), llamar GET /api/puestos con HttpClient (incluir JWT en header).
-    // 2. Deserializar la respuesta en una lista de PuestoDto.
-    // 3. Exponer la lista como propiedad pública para que la vista la itere.
-    // 4. Al hacer clic en un puesto, redirigir a Oferentes/Index?idPuesto={id}.
-
-    public Task OnGetAsync()
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        // TODO Core6 (Fran): Implementar.
-        return Task.CompletedTask;
+        PropertyNameCaseInsensitive = true
+    };
+
+    private readonly ICoreApiClientFactory _apiClientFactory;
+    private readonly ILogger<IndexModel> _logger;
+
+    public IndexModel(ICoreApiClientFactory apiClientFactory, ILogger<IndexModel> logger)
+    {
+        _apiClientFactory = apiClientFactory;
+        _logger = logger;
+    }
+
+    public List<PuestoDto> Puestos { get; private set; } = new();
+
+    public string? ErrorMessage { get; private set; }
+
+    public async Task OnGetAsync()
+    {
+        try
+        {
+            var client = _apiClientFactory.CrearCliente();
+            var respuesta = await client.GetFromJsonAsync<ApiResponse<List<PuestoDto>>>(
+                "api/puestos", JsonOptions);
+
+            Puestos = respuesta?.Data ?? new List<PuestoDto>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al consultar los puestos activos desde el Core API.");
+            ErrorMessage = "No fue posible obtener el listado de puestos activos. Intente nuevamente más tarde.";
+        }
     }
 }

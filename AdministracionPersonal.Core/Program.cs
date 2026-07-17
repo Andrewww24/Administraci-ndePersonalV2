@@ -13,6 +13,10 @@ builder.Services.AddControllers();
 // Razor Pages (Core5, Core6, Core7, Core9 — pantallas internas)
 builder.Services.AddRazorPages();
 
+// HttpClient para que las pantallas internas (Razor Pages) consuman los Web Services del Core
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient("CoreApi");
+
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -55,6 +59,9 @@ builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 
 // Servicio de bitácora (transversal a todas las historias)
 builder.Services.AddScoped<IBitacoraService, BitacoraService>();
+
+// Helper para que las Razor Pages consuman los Web Services del propio Core
+builder.Services.AddScoped<ICoreApiClientFactory, CoreApiClientFactory>();
 
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"]

@@ -11,41 +11,41 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = AdministracionPersonal.Core
 build_property.RootNamespace = AdministracionPersonal.Core
-build_property.ProjectDir = C:\Users\andre\OneDrive\Documents\GitHub\AdministracióndePersonalV2\AdministracionPersonal.Core\
+build_property.ProjectDir = C:\Users\P3LADINH0\Documents\GitHub\Administraci-ndePersonalV2\AdministracionPersonal.Core\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\andre\OneDrive\Documents\GitHub\AdministracióndePersonalV2\AdministracionPersonal.Core
+build_property.MSBuildProjectDirectory = C:\Users\P3LADINH0\Documents\GitHub\Administraci-ndePersonalV2\AdministracionPersonal.Core
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/andre/OneDrive/Documents/GitHub/AdministracióndePersonalV2/AdministracionPersonal.Core/Pages/Auth/Login.cshtml]
+[C:/Users/P3LADINH0/Documents/GitHub/Administraci-ndePersonalV2/AdministracionPersonal.Core/Pages/Auth/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQXV0aFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/andre/OneDrive/Documents/GitHub/AdministracióndePersonalV2/AdministracionPersonal.Core/Pages/Oferentes/Detalle.cshtml]
+[C:/Users/P3LADINH0/Documents/GitHub/Administraci-ndePersonalV2/AdministracionPersonal.Core/Pages/Oferentes/Detalle.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT2ZlcmVudGVzXERldGFsbGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/andre/OneDrive/Documents/GitHub/AdministracióndePersonalV2/AdministracionPersonal.Core/Pages/Oferentes/Index.cshtml]
+[C:/Users/P3LADINH0/Documents/GitHub/Administraci-ndePersonalV2/AdministracionPersonal.Core/Pages/Oferentes/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT2ZlcmVudGVzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/andre/OneDrive/Documents/GitHub/AdministracióndePersonalV2/AdministracionPersonal.Core/Pages/Puestos/Index.cshtml]
+[C:/Users/P3LADINH0/Documents/GitHub/Administraci-ndePersonalV2/AdministracionPersonal.Core/Pages/Puestos/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHVlc3Rvc1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/andre/OneDrive/Documents/GitHub/AdministracióndePersonalV2/AdministracionPersonal.Core/Pages/_Layout.cshtml]
+[C:/Users/P3LADINH0/Documents/GitHub/Administraci-ndePersonalV2/AdministracionPersonal.Core/Pages/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0xheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/andre/OneDrive/Documents/GitHub/AdministracióndePersonalV2/AdministracionPersonal.Core/Pages/_ViewImports.cshtml]
+[C:/Users/P3LADINH0/Documents/GitHub/Administraci-ndePersonalV2/AdministracionPersonal.Core/Pages/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/andre/OneDrive/Documents/GitHub/AdministracióndePersonalV2/AdministracionPersonal.Core/Pages/_ViewStart.cshtml]
+[C:/Users/P3LADINH0/Documents/GitHub/Administraci-ndePersonalV2/AdministracionPersonal.Core/Pages/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

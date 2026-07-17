@@ -1014,23 +1014,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\andre\\.nuget\\packages\\": {},
+    "C:\\Users\\P3LADINH0\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\andre\\OneDrive\\Documents\\GitHub\\AdministracióndePersonalV2\\AdministracionPersonal.Core\\AdministracionPersonal.Core.csproj",
+      "projectUniqueName": "C:\\Users\\P3LADINH0\\Documents\\GitHub\\Administraci-ndePersonalV2\\AdministracionPersonal.Core\\AdministracionPersonal.Core.csproj",
       "projectName": "AdministracionPersonal.Core",
-      "projectPath": "C:\\Users\\andre\\OneDrive\\Documents\\GitHub\\AdministracióndePersonalV2\\AdministracionPersonal.Core\\AdministracionPersonal.Core.csproj",
-      "packagesPath": "C:\\Users\\andre\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\andre\\OneDrive\\Documents\\GitHub\\AdministracióndePersonalV2\\AdministracionPersonal.Core\\obj\\",
+      "projectPath": "C:\\Users\\P3LADINH0\\Documents\\GitHub\\Administraci-ndePersonalV2\\AdministracionPersonal.Core\\AdministracionPersonal.Core.csproj",
+      "packagesPath": "C:\\Users\\P3LADINH0\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\P3LADINH0\\Documents\\GitHub\\Administraci-ndePersonalV2\\AdministracionPersonal.Core\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\andre\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\P3LADINH0\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1107,7 +1107,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

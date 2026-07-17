@@ -10,6 +10,14 @@ public class OferenteDto
     public string? Direccion { get; set; }
     public int? IdDistrito { get; set; }
     public DateTime FechaRegistro { get; set; }
+
+    public string? Distrito { get; set; }
+    public string? Canton { get; set; }
+    public string? Provincia { get; set; }
+    public string? Correos { get; set; }
+    public string? Telefonos { get; set; }
+    public string? RutaCurriculum { get; set; }
+    public string? PuestosPostulados { get; set; }
 }
 
 /// <summary>

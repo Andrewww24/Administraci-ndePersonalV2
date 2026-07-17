@@ -78,26 +78,58 @@ public class OferentesController : ControllerBase
     }
 
     /// <summary>
-    /// Core8 — Obtiene el detalle completo de un oferente por su ID.
+    /// Core8 — Obtiene el detalle completo de un oferente a partir de su identificación.
     /// </summary>
-    /// <param name="idOferente">ID del oferente.</param>
+    /// <param name="identificacion">Identificación del oferente (cédula, DIMEX o pasaporte).</param>
     /// <returns>Detalle completo del oferente.</returns>
     /// <response code="200">Detalle obtenido correctamente.</response>
+    /// <response code="400">Identificación inválida.</response>
     /// <response code="404">Oferente no encontrado.</response>
     /// <response code="500">Error interno del servidor.</response>
-    [HttpGet("{idOferente:int}")]
+    [HttpGet("{identificacion}")]
     [ProducesResponseType(typeof(ApiResponse<OferenteDto>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<object>), 400)]
     [ProducesResponseType(typeof(ApiResponse<object>), 404)]
     [ProducesResponseType(typeof(ApiResponse<object>), 500)]
-    public async Task<IActionResult> ObtenerDetalleOferente(int idOferente)
+    public async Task<IActionResult> ObtenerDetalleOferente(string identificacion)
     {
-        // TODO Core8: Implementar según criterios de aceptación.
-        // 1. Validar que idOferente > 0; si no, retornar BadRequest.
-        // 2. Consultar la vista vw_detalle_oferente filtrando por id_oferente.
-        // 3. Si no existe, retornar NotFound con mensaje descriptivo.
-        // 4. Registrar en bitácora: tipo=SELECT, entidad="oferente",
-        //    descripcion=$"El usuario consulta detalle del oferente {idOferente}".
-        // 5. Retornar Ok(ApiResponse<OferenteDto>.Ok(resultado)).
-        throw new NotImplementedException("Core8: ObtenerDetalleOferente pendiente de implementar.");
+        if (string.IsNullOrWhiteSpace(identificacion))
+            return BadRequest(ApiResponse<object>.Fail("La identificación del oferente es requerida."));
+
+        try
+        {
+            using var connection = _dbFactory.CreateConnection();
+
+            var idOferente = await connection.QueryFirstOrDefaultAsync<int?>(
+                "SELECT id_oferente FROM oferente WHERE identificacion = @Identificacion",
+                new { Identificacion = identificacion });
+
+            if (idOferente is null)
+                return NotFound(ApiResponse<object>.Fail($"No existe un oferente con identificación {identificacion}."));
+
+            var detalle = await connection.QueryFirstOrDefaultAsync<OferenteDto>(
+                @"SELECT id_oferente AS IdOferente, identificacion AS Identificacion,
+                         tipo_identificacion AS TipoIdentificacion, nombre_completo AS NombreCompleto,
+                         fecha_nacimiento AS FechaNacimiento, direccion AS Direccion,
+                         id_distrito AS IdDistrito, fecha_registro AS FechaRegistro,
+                         distrito AS Distrito, canton AS Canton, provincia AS Provincia,
+                         correos AS Correos, telefonos AS Telefonos,
+                         puestos_postulados AS PuestosPostulados, ruta_curriculum AS RutaCurriculum
+                  FROM vw_detalle_oferente
+                  WHERE id_oferente = @IdOferente",
+                new { IdOferente = idOferente });
+
+            if (detalle is null)
+                return NotFound(ApiResponse<object>.Fail($"No existe un oferente con identificación {identificacion}."));
+
+            await _bitacora.RegistrarAsync("SELECT", "oferente", $"El usuario consulta detalle del oferente {identificacion}");
+
+            return Ok(ApiResponse<OferenteDto>.Ok(detalle));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al obtener detalle del oferente con identificación {Identificacion}", identificacion);
+            return StatusCode(500, ApiResponse<object>.Fail(ex.Message));
+        }
     }
 }

@@ -10,7 +10,8 @@ namespace AdministracionPersonal.Core.Pages.Oferentes;
 /// <summary>
 /// Core9 — Pantalla de detalle del oferente con botón "Crear empleado".
 /// Responsable: Fran (Core1, Core3, Core6, Core9)
-/// Consume: GET /api/oferentes/{idOferente} (Core8)
+/// Consume: GET /api/oferentes/{identificacion} (Core8 — implementado por Andrew,
+///          identifica al oferente por su número de identificación, no por id numérico)
 ///          POST /api/empleados (Core3)
 /// </summary>
 public class DetalleModel : PageModel
@@ -29,13 +30,18 @@ public class DetalleModel : PageModel
         _logger = logger;
     }
 
-    /// <summary>Id del oferente a mostrar (llega desde el listado de oferentes aptos, Core7).</summary>
+    /// <summary>Identificación del oferente a mostrar (llega desde el listado de oferentes aptos, Core7).</summary>
     [BindProperty(SupportsGet = true)]
-    public int IdOferente { get; set; }
+    public string? Identificacion { get; set; }
 
     /// <summary>Id del puesto para el que se está considerando al oferente.</summary>
     [BindProperty(SupportsGet = true)]
     public int IdPuesto { get; set; }
+
+    /// <summary>Id numérico del oferente, resuelto tras consultar Core8. Se conserva en un
+    /// campo oculto del formulario para poder llamar a Core3 sin volver a consultar Core8.</summary>
+    [BindProperty]
+    public int IdOferenteEncontrado { get; set; }
 
     public OferenteDto? Oferente { get; private set; }
 
@@ -51,7 +57,7 @@ public class DetalleModel : PageModel
 
     public async Task<IActionResult> OnPostCrearEmpleadoAsync()
     {
-        if (IdOferente <= 0 || IdPuesto <= 0)
+        if (IdOferenteEncontrado <= 0 || IdPuesto <= 0)
         {
             ErrorMessage = "No se pudo determinar el oferente o el puesto seleccionado.";
             await CargarOferenteAsync();
@@ -63,7 +69,7 @@ public class DetalleModel : PageModel
             var client = _apiClientFactory.CrearCliente();
             var request = new CrearEmpleadoRequest
             {
-                IdOferente = IdOferente,
+                IdOferente = IdOferenteEncontrado,
                 IdPuesto = IdPuesto,
                 FechaIngreso = DateTime.Today
             };
@@ -83,7 +89,7 @@ public class DetalleModel : PageModel
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al crear el empleado desde el detalle del oferente {IdOferente}.", IdOferente);
+            _logger.LogError(ex, "Error al crear el empleado desde el detalle del oferente {Identificacion}.", Identificacion);
             ErrorMessage = "Ocurrió un error al crear el empleado. Intente nuevamente más tarde.";
             await CargarOferenteAsync();
             return Page();
@@ -92,9 +98,9 @@ public class DetalleModel : PageModel
 
     private async Task CargarOferenteAsync()
     {
-        if (IdOferente <= 0)
+        if (string.IsNullOrWhiteSpace(Identificacion))
         {
-            ErrorMessage = "No se indicó un oferente válido.";
+            ErrorMessage = "No se indicó una identificación de oferente válida.";
             return;
         }
 
@@ -102,7 +108,7 @@ public class DetalleModel : PageModel
         {
             var client = _apiClientFactory.CrearCliente();
             var respuesta = await client.GetFromJsonAsync<ApiResponse<OferenteDto>>(
-                $"api/oferentes/{IdOferente}", JsonOptions);
+                $"api/oferentes/{Uri.EscapeDataString(Identificacion)}", JsonOptions);
 
             Oferente = respuesta?.Data;
 
@@ -110,10 +116,14 @@ public class DetalleModel : PageModel
             {
                 ErrorMessage = "No se encontró la información del oferente solicitado.";
             }
+            else
+            {
+                IdOferenteEncontrado = Oferente.IdOferente;
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error al consultar el detalle del oferente {IdOferente}.", IdOferente);
+            _logger.LogError(ex, "Error al consultar el detalle del oferente {Identificacion}.", Identificacion);
             ErrorMessage = "No fue posible obtener el detalle del oferente. Intente nuevamente más tarde.";
         }
     }

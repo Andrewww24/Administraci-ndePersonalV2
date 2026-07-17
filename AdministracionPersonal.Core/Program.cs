@@ -63,6 +63,9 @@ builder.Services.AddScoped<IBitacoraService, BitacoraService>();
 // Helper para que las Razor Pages consuman los Web Services del propio Core
 builder.Services.AddScoped<ICoreApiClientFactory, CoreApiClientFactory>();
 
+// Cifrado/verificación de contraseñas (Core4 — mismo esquema AES-GCM del Alcance 1)
+builder.Services.AddSingleton<IPasswordEncryptionService, AesGcmPasswordEncryptionService>();
+
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key no configurado en appsettings.");

@@ -1,5 +1,7 @@
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using AdministracionPersonal.Core.Models;
+using AdministracionPersonal.Core.Repositories;
 using AdministracionPersonal.Core.Services;
 
 namespace AdministracionPersonal.Core.Controllers;
@@ -13,11 +15,13 @@ namespace AdministracionPersonal.Core.Controllers;
 [Produces("application/json")]
 public class PuestosController : ControllerBase
 {
+    private readonly IDbConnectionFactory _dbFactory;
     private readonly IBitacoraService _bitacora;
     private readonly ILogger<PuestosController> _logger;
 
-    public PuestosController(IBitacoraService bitacora, ILogger<PuestosController> logger)
+    public PuestosController(IDbConnectionFactory dbFactory, IBitacoraService bitacora, ILogger<PuestosController> logger)
     {
+        _dbFactory = dbFactory;
         _bitacora = bitacora;
         _logger = logger;
     }
@@ -33,13 +37,32 @@ public class PuestosController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<object>), 500)]
     public async Task<IActionResult> ObtenerPuestosActivos()
     {
-        // TODO Core1: Implementar según criterios de aceptación.
-        // 1. Consultar la vista vw_puestos_disponibles con Dapper.
-        // 2. Mapear resultado a IEnumerable<PuestoDto> (solo IdPuesto, Codigo, Nombre).
-        // 3. Registrar en bitácora: tipo=SELECT, entidad="puesto",
-        //    descripcion="El usuario consulta lista de puestos activos".
-        // 4. Retornar Ok(ApiResponse<IEnumerable<PuestoDto>>.Ok(resultado)).
-        // En caso de error: retornar StatusCode(500, ApiResponse<object>.Fail(ex.Message)).
-        throw new NotImplementedException("Core1: ObtenerPuestosActivos pendiente de implementar.");
+        const string sql = @"
+            SELECT id_puesto AS IdPuesto, codigo AS Codigo, nombre AS Nombre
+            FROM vw_puestos_disponibles
+            ORDER BY nombre";
+
+        try
+        {
+            using var connection = _dbFactory.CreateConnection();
+            var puestos = await connection.QueryAsync<PuestoDto>(sql);
+
+            await _bitacora.RegistrarAsync(
+                tipo: "SELECT",
+                entidad: "puesto",
+                descripcion: "El usuario consulta lista de puestos activos");
+
+            return Ok(ApiResponse<IEnumerable<PuestoDto>>.Ok(puestos, "Puestos activos obtenidos correctamente."));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al obtener los puestos activos.");
+            await _bitacora.RegistrarAsync(
+                tipo: "ERROR",
+                entidad: "puesto",
+                descripcion: $"Error al consultar puestos activos: {ex.Message}");
+
+            return StatusCode(500, ApiResponse<object>.Fail("Ocurrió un error al obtener los puestos activos."));
+        }
     }
 }

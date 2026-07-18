@@ -3,5 +3,37 @@
 @{
     ViewData["Title"] = "Puestos activos";
 }
-@* TODO Core6 (Fran): Implementar listado de puestos activos *@
-<p>Core6 — Listado de puestos pendiente de implementar.</p>
+
+<h2>Puestos activos</h2>
+<p class="text-muted">Seleccione un puesto para ver los oferentes que cumplen sus requisitos.</p>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.ErrorMessage
+    </div>
+}
+else if (!Model.Puestos.Any())
+{
+    <div class="alert alert-info" role="alert">
+        No hay puestos activos en este momento.
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            Información
+        </div>
+        <ul class="list-group list-group-flush">
+            @foreach (var puesto in Model.Puestos)
+            {
+                <li class="list-group-item">
+                    <a asp-page="/Oferentes/Index" asp-route-idPuesto="@puesto.IdPuesto">
+                        @puesto.Nombre
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+}

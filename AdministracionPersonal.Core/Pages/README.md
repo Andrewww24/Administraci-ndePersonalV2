@@ -20,13 +20,17 @@ Coordinar con el profesor/equipo y actualizar este README con la decisión tomad
 
 ### Core6 — Listado de puestos
 - Consume: Core1 (GET /api/puestos)
-- Responsable: [NOMBRE DEL INTEGRANTE CORE6]
+- Responsable: Fran — IMPLEMENTADO (Razor Page en este proyecto)
+  Requiere sesión iniciada (usa la misma clave "CoreJwt" que Core5); si no hay sesión,
+  redirige a /Auth/Login?motivo=requerida.
 
 ### Core7 — Listado de oferentes aptos
 - Consume: Core2 (GET /api/oferentes/aptos/{idPuesto})
 - Responsable: [NOMBRE DEL INTEGRANTE CORE7]
 
 ### Core9 — Detalle de oferente + botón Crear empleado
-- Consume: Core8 (GET /api/oferentes/{idOferente})
+- Consume: Core8 (GET /api/oferentes/{identificacion})
 - Consume: Core3 (POST /api/empleados)
-- Responsable: [NOMBRE DEL INTEGRANTE CORE9]
+- Responsable: Fran — IMPLEMENTADO (Razor Page en este proyecto)
+  Recibe la identificación del oferente (no un id numérico) para calzar con el
+  contrato real de Core8; requiere sesión iniciada igual que Core6.

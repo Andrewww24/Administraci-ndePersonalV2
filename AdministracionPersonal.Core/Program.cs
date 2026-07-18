@@ -11,7 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Razor Pages (Core5, Core6, Core7, Core9 — pantallas internas)
-builder.Services.AddRazorPages();
+// CAMBIO: rutas adicionales para la pantalla de login (Core5).
+// Queda accesible en las tres direcciones, sin redirecciones ni /index.html:
+//   http://localhost:5124/index   <- la que abre el navegador al arrancar
+//   http://localhost:5124/        <- raíz del sitio
+//   http://localhost:5124/Auth/Login  <- ruta por convención, la usan los RedirectToPage
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AddPageRoute("/Auth/Login", "index");
+    options.Conventions.AddPageRoute("/Auth/Login", "");
+});
 
 // Swagger / OpenAPI
 builder.Services.AddEndpointsApiExplorer();
@@ -144,8 +153,5 @@ app.UseSwaggerUI(c =>
 
 app.MapControllers();
 app.MapRazorPages();
-
-// CAMBIO: la raíz del sitio lleva a la pantalla de login (Core5).
-app.MapGet("/", () => Results.Redirect("/Auth/Login"));
 
 app.Run();

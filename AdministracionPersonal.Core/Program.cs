@@ -63,8 +63,14 @@ builder.Services.AddScoped<IPasswordCryptoService, PasswordCryptoService>();
 builder.Services.AddHttpClient();
 
 // Sesión para guardar el JWT tras el login (Core5).
+// CAMBIO: se define un vencimiento por inactividad, consistente con la HU Seg7 del Alcance 1.
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(5);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"]
@@ -97,22 +103,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Core API v1");
-    c.RoutePrefix = string.Empty; // Swagger en la raíz: http://localhost:5000/
-});
-
-app.UseCors();
-app.UseSession();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-app.MapRazorPages();
-app.UseStaticFiles();
-
-// Manejo global de excepciones
+// CAMBIO: el manejador de excepciones va de PRIMERO. Un middleware solo captura
+// los errores de lo que se ejecuta después de él; al final del pipeline no servía
+// para los middlewares anteriores.
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
@@ -129,5 +122,30 @@ app.UseExceptionHandler(errorApp =>
         }
     });
 });
+
+// CAMBIO: archivos estáticos antes del enrutamiento.
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseCors();
+app.UseSession();
+app.UseAuthentication();
+app.UseAuthorization();
+
+// CAMBIO: Swagger deja libre la raíz y queda en /swagger, que es la dirección
+// que abre launchSettings.json (antes daba 404 por el RoutePrefix vacío).
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Core API v1");
+    c.RoutePrefix = "swagger";
+});
+
+app.MapControllers();
+app.MapRazorPages();
+
+// CAMBIO: la raíz del sitio lleva a la pantalla de login (Core5).
+app.MapGet("/", () => Results.Redirect("/Auth/Login"));
 
 app.Run();

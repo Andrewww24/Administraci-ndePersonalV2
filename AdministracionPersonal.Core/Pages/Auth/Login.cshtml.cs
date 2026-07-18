@@ -2,7 +2,6 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using AdministracionPersonal.Core.Controllers;
 using AdministracionPersonal.Core.Models;
 
 namespace AdministracionPersonal.Core.Pages.Auth;
@@ -14,9 +13,23 @@ namespace AdministracionPersonal.Core.Pages.Auth;
 /// </summary>
 public class LoginModel : PageModel
 {
-    private readonly IHttpClientFactory _httpFactory;
+    // Claves de sesión usadas por el resto de pantallas internas (Core6, Core7, Core9).
+    public const string SesionToken = "CoreJwt";
+    public const string SesionNombre = "CoreNombre";
+    public const string SesionIdUsuario = "CoreIdUsuario";
 
-    public LoginModel(IHttpClientFactory httpFactory) => _httpFactory = httpFactory;
+    private const string MsgCredenciales = "Usuario y/o contraseña incorrectos.";
+
+    private readonly IHttpClientFactory _httpFactory;
+    private readonly IConfiguration _config;
+    private readonly ILogger<LoginModel> _logger;
+
+    public LoginModel(IHttpClientFactory httpFactory, IConfiguration config, ILogger<LoginModel> logger)
+    {
+        _httpFactory = httpFactory;
+        _config = config;
+        _logger = logger;
+    }
 
     [BindProperty]
     public string Usuario { get; set; } = string.Empty;
@@ -28,16 +41,37 @@ public class LoginModel : PageModel
 
     private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
 
-    public void OnGet() { }
+    public IActionResult OnGet(string? motivo = null)
+    {
+        // Permite que otras pantallas redirijan aquí con un mensaje.
+        // Ej: /Auth/Login?motivo=expirada
+        ErrorMessage = motivo switch
+        {
+            "expirada" => "Su sesión ha expirado. Por favor inicie sesión nuevamente.",
+            "requerida" => "Por favor inicie sesión para utilizar el sistema.",
+            _ => null
+        };
+        return Page();
+    }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        // 1. Capturar usuario y contraseña del formulario (BindProperty).
+        // Validación en pantalla, para no golpear el servicio con campos vacíos.
+        // El criterio de aceptación exige exactamente el mismo mensaje.
+        if (string.IsNullOrWhiteSpace(Usuario) || string.IsNullOrWhiteSpace(Password))
+        {
+            ErrorMessage = MsgCredenciales;
+            return Page();
+        }
+
         try
         {
-            // 2. Llamar al endpoint POST /api/auth/login (Core4) con HttpClient.
             var client = _httpFactory.CreateClient();
-            client.BaseAddress = new Uri($"{Request.Scheme}://{Request.Host}");
+
+            // La URL base se toma de configuración; si no está definida, se usa la del request actual.
+            var baseUrl = _config["CoreApi:BaseUrl"];
+            client.BaseAddress = new Uri(
+                string.IsNullOrWhiteSpace(baseUrl) ? $"{Request.Scheme}://{Request.Host}" : baseUrl);
 
             var respuesta = await client.PostAsJsonAsync("/api/auth/login",
                 new LoginRequest { Usuario = Usuario, Password = Password });
@@ -46,19 +80,23 @@ public class LoginModel : PageModel
 
             if (respuesta.IsSuccessStatusCode && cuerpo is { Success: true, Data: not null })
             {
-                // 3. Éxito: guardar el JWT en sesión y redirigir a Puestos/Index.
-                HttpContext.Session.SetString("CoreJwt", cuerpo.Data.Token);
-                HttpContext.Session.SetString("CoreNombre", cuerpo.Data.NombreCompleto);
+                HttpContext.Session.SetString(SesionToken, cuerpo.Data.Token);
+                HttpContext.Session.SetString(SesionNombre, cuerpo.Data.NombreCompleto);
+                HttpContext.Session.SetInt32(SesionIdUsuario, cuerpo.Data.IdUsuario);
+
+                // HU Core5: tras el login exitoso se pasa al listado de puestos (Core6).
                 return RedirectToPage("/Puestos/Index");
             }
 
-            // 4. Falla: mostrar el mensaje del API.
-            ErrorMessage = cuerpo?.Message ?? "Usuario y/o contraseña incorrectos.";
+            ErrorMessage = cuerpo?.Message ?? MsgCredenciales;
+            Password = string.Empty;
             return Page();
         }
-        catch
+        catch (Exception ex)
         {
-            ErrorMessage = "No fue posible contactar el servicio de autenticación.";
+            _logger.LogError(ex, "No se pudo contactar el servicio de autenticación (Core4).");
+            ErrorMessage = "No fue posible contactar el servicio de autenticación. Intente de nuevo.";
+            Password = string.Empty;
             return Page();
         }
     }

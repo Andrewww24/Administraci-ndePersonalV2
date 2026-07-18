@@ -9,55 +9,124 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] — Admin Personal Core</title>
+    <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
     <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #1e3a5f 0%, #d9412c 100%);
-        }
-        .login-card { max-width: 400px; width: 100%; border: none; border-radius: 1rem; }
-        .brand-badge {
-            width: 64px; height: 64px; border-radius: 50%;
-            background: #1e3a5f; color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.75rem; margin: 0 auto 0.5rem;
-        }
+            :root {
+                --sm-azul: #1e3a5f;
+                --sm-azul-claro: #2f5789;
+                --sm-azul-oscuro: #162b46;
+                --sm-campo: #eef2f8;
+                --sm-borde: #e3e2dd;
+                --sm-fondo: #f5f4f1;
+            }
+
+            body {
+                min-height: 100vh;
+                background-color: var(--sm-fondo);
+                color: #22262b;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem 1rem;
+            }
+
+            .tarjeta {
+                width: 100%;
+                max-width: 380px;
+                background-color: #fff;
+                border: 1px solid var(--sm-borde);
+                border-radius: 8px;
+            }
+
+            .form-label {
+                font-size: .875rem;
+                font-weight: 400;
+                color: #22262b;
+                margin-bottom: .35rem;
+            }
+
+            .form-control {
+                background-color: var(--sm-campo);
+                border: 1px solid transparent;
+                border-radius: 5px;
+                padding: .55rem .75rem;
+                font-size: .95rem;
+            }
+
+                .form-control:focus {
+                    background-color: var(--sm-campo);
+                    border-color: var(--sm-azul-claro);
+                    box-shadow: 0 0 0 3px rgba(47, 87, 137, .15);
+                }
+
+                /* Evita que el autocompletado de Chrome cambie el color del campo. */
+                .form-control:-webkit-autofill,
+                .form-control:-webkit-autofill:focus {
+                    -webkit-text-fill-color: #22262b;
+                    -webkit-box-shadow: 0 0 0 1000px var(--sm-campo) inset;
+                }
+
+            .btn-institucional {
+                background-color: var(--sm-azul);
+                border: 1px solid var(--sm-azul);
+                color: #fff;
+                border-radius: 5px;
+                padding: .6rem;
+                font-size: 1rem;
+                font-weight: 500;
+            }
+
+                .btn-institucional:hover {
+                    background-color: var(--sm-azul-claro);
+                    color: #fff;
+                }
+
+                .btn-institucional:active {
+                    background-color: var(--sm-azul-oscuro);
+                    color: #fff;
+                }
+
+                .btn-institucional:focus-visible {
+                    outline: none;
+                    box-shadow: 0 0 0 3px rgba(47, 87, 137, .3);
+                }
+
+            .alert-institucional {
+                background-color: #fdf2f0;
+                border: 1px solid #f2d4cf;
+                border-left: 3px solid #c0392b;
+                color: #8a2b22;
+                border-radius: 5px;
+                font-size: .85rem;
+                padding: .6rem .75rem;
+            }
     </style>
 </head>
 <body>
-    <div class="login-card card shadow-lg p-4 m-3">
-        <div class="text-center mb-3">
-            <div class="brand-badge">SM</div>
-            <h4 class="mb-0 fw-bold text-dark">Servicios Médicos SA</h4>
-            <small class="text-muted">Sistema Core — Administración de Personal</small>
-        </div>
+    <div class="tarjeta p-4">
 
         @if (!string.IsNullOrEmpty(Model.ErrorMessage))
         {
-            <div class="alert alert-danger py-2" role="alert">@Model.ErrorMessage</div>
+            <div class="alert-institucional mb-3" role="alert">@Model.ErrorMessage</div>
         }
 
-        <form method="post">
+        <form method="post" novalidate>
             <div class="mb-3">
                 <label for="Usuario" class="form-label">Usuario</label>
                 <input type="text" class="form-control" id="Usuario" name="Usuario"
                        value="@Model.Usuario" autocomplete="username" autofocus />
             </div>
-            <div class="mb-3">
+
+            <div class="mb-4">
                 <label for="Password" class="form-label">Contraseña</label>
                 <input type="password" class="form-control" id="Password" name="Password"
                        autocomplete="current-password" />
             </div>
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary btn-lg">Aceptar</button>
-            </div>
-        </form>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <button type="submit" class="btn btn-institucional w-100">Aceptar</button>
+        </form>
+
+    </div>
 </body>
 </html>

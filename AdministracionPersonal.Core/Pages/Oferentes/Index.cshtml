@@ -3,5 +3,43 @@
 @{
     ViewData["Title"] = "Oferentes aptos";
 }
-@* TODO Core7 (Andrew): Implementar listado de oferentes aptos por puesto *@
-<p>Core7 — Listado de oferentes aptos pendiente de implementar.</p>
+
+<h2>Oferentes aptos @(string.IsNullOrWhiteSpace(Model.Codigo) ? "" : $"— Puesto {Model.Codigo}")</h2>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-warning" role="alert">
+        @Model.ErrorMessage
+    </div>
+}
+else if (!Model.Oferentes.Any())
+{
+    <div class="alert alert-info" role="alert">
+        No se encontraron oferentes aptos para este puesto.
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Identificación</th>
+                <th>Nombre completo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var o in Model.Oferentes)
+            {
+                <tr>
+                    <td>@o.Identificacion</td>
+                    <td>
+                        <a asp-page="/Oferentes/Detalle" asp-route-identificacion="@o.Identificacion">
+                            @o.NombreCompleto
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<a asp-page="/Puestos/Index" class="btn btn-secondary mt-3">Regresar</a>

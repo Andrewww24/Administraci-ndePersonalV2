@@ -14,7 +14,9 @@ Coordinar con el profesor/equipo y actualizar este README con la decisión tomad
 
 ### Core5 — Login del sistema Core
 - Consume: Core4 (POST /api/auth/login)
-- Responsable: [NOMBRE DEL INTEGRANTE CORE5]
+- Responsable: Kendall — IMPLEMENTADO (Razor Page en este proyecto)
+  Guarda el JWT en sesión ("CoreJwt") tras un login exitoso; bloqueo por 3 intentos
+  y expiración de sesión a los 5 minutos manejados en Core4/Program.cs.
 
 ### Core6 — Listado de puestos
 - Consume: Core1 (GET /api/puestos)

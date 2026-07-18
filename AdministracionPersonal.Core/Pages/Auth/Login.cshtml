@@ -1,8 +1,63 @@
 @page
 @model AdministracionPersonal.Core.Pages.Auth.LoginModel
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Ingreso al sistema";
     Layout = null;
 }
-@* TODO Core5 (Kendall): Implementar pantalla de login *@
-<p>Core5 — Login pendiente de implementar.</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Admin Personal Core</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1e3a5f 0%, #d9412c 100%);
+        }
+        .login-card { max-width: 400px; width: 100%; border: none; border-radius: 1rem; }
+        .brand-badge {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: #1e3a5f; color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.75rem; margin: 0 auto 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card card shadow-lg p-4 m-3">
+        <div class="text-center mb-3">
+            <div class="brand-badge">SM</div>
+            <h4 class="mb-0 fw-bold text-dark">Servicios Médicos SA</h4>
+            <small class="text-muted">Sistema Core — Administración de Personal</small>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger py-2" role="alert">@Model.ErrorMessage</div>
+        }
+
+        <form method="post">
+            <div class="mb-3">
+                <label for="Usuario" class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="Usuario" name="Usuario"
+                       value="@Model.Usuario" autocomplete="username" autofocus />
+            </div>
+            <div class="mb-3">
+                <label for="Password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="Password" name="Password"
+                       autocomplete="current-password" />
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">Aceptar</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

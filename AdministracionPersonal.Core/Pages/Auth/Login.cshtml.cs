@@ -1,5 +1,9 @@
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using AdministracionPersonal.Core.Controllers;
+using AdministracionPersonal.Core.Models;
 
 namespace AdministracionPersonal.Core.Pages.Auth;
 
@@ -10,17 +14,52 @@ namespace AdministracionPersonal.Core.Pages.Auth;
 /// </summary>
 public class LoginModel : PageModel
 {
-    // TODO Core5 (Kendall): Implementar lógica de login.
-    // 1. Capturar usuario y contraseña del formulario.
-    // 2. Llamar al endpoint POST /api/auth/login (Core4) con HttpClient.
-    // 3. Si la respuesta es exitosa: guardar el JWT en sesión/cookie y redirigir a Puestos/Index.
-    // 4. Si falla: mostrar ErrorMessage con el mensaje del API (cuenta bloqueada, credenciales inválidas, etc.).
+    private readonly IHttpClientFactory _httpFactory;
+
+    public LoginModel(IHttpClientFactory httpFactory) => _httpFactory = httpFactory;
+
+    [BindProperty]
+    public string Usuario { get; set; } = string.Empty;
+
+    [BindProperty]
+    public string Password { get; set; } = string.Empty;
+
     public string? ErrorMessage { get; private set; }
+
+    private static readonly JsonSerializerOptions JsonOpts = new() { PropertyNameCaseInsensitive = true };
 
     public void OnGet() { }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPostAsync()
     {
-        throw new NotImplementedException("Core5: Login pendiente de implementar.");
+        // 1. Capturar usuario y contraseña del formulario (BindProperty).
+        try
+        {
+            // 2. Llamar al endpoint POST /api/auth/login (Core4) con HttpClient.
+            var client = _httpFactory.CreateClient();
+            client.BaseAddress = new Uri($"{Request.Scheme}://{Request.Host}");
+
+            var respuesta = await client.PostAsJsonAsync("/api/auth/login",
+                new LoginRequest { Usuario = Usuario, Password = Password });
+
+            var cuerpo = await respuesta.Content.ReadFromJsonAsync<ApiResponse<LoginResponse>>(JsonOpts);
+
+            if (respuesta.IsSuccessStatusCode && cuerpo is { Success: true, Data: not null })
+            {
+                // 3. Éxito: guardar el JWT en sesión y redirigir a Puestos/Index.
+                HttpContext.Session.SetString("CoreJwt", cuerpo.Data.Token);
+                HttpContext.Session.SetString("CoreNombre", cuerpo.Data.NombreCompleto);
+                return RedirectToPage("/Puestos/Index");
+            }
+
+            // 4. Falla: mostrar el mensaje del API.
+            ErrorMessage = cuerpo?.Message ?? "Usuario y/o contraseña incorrectos.";
+            return Page();
+        }
+        catch
+        {
+            ErrorMessage = "No fue posible contactar el servicio de autenticación.";
+            return Page();
+        }
     }
 }

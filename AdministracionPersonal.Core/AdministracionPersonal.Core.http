@@ -1,6 +1,12 @@
 @AdministracionPersonal.Core_HostAddress = http://localhost:5124
 
-GET {{AdministracionPersonal.Core_HostAddress}}/weatherforecast/
-Accept: application/json
+### Core4 — Login (autenticación). Cambie usuario/contraseña por unos válidos de su BD.
+POST {{AdministracionPersonal.Core_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "usuario": "admin",
+  "password": "SU_CONTRASENA_AQUI"
+}
 
 ###

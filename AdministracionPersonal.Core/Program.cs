@@ -56,6 +56,16 @@ builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 // Servicio de bitácora (transversal a todas las historias)
 builder.Services.AddScoped<IBitacoraService, BitacoraService>();
 
+// Core4/Core5 (Kendall): verificación AES-GCM de contraseñas.
+builder.Services.AddScoped<IPasswordCryptoService, PasswordCryptoService>();
+
+// HttpClient para que la pantalla de login (Core5) consuma el web service Core4.
+builder.Services.AddHttpClient();
+
+// Sesión para guardar el JWT tras el login (Core5).
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+
 // JWT
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key no configurado en appsettings.");
@@ -95,6 +105,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseCors();
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

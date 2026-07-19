@@ -1,4 +1,10 @@
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using AdministracionPersonal.Core.Models;
+using AdministracionPersonal.Core.Pages.Auth;
 
 namespace AdministracionPersonal.Core.Pages.Puestos;
 
@@ -9,15 +15,57 @@ namespace AdministracionPersonal.Core.Pages.Puestos;
 /// </summary>
 public class IndexModel : PageModel
 {
-    // TODO Core6 (Fran): Implementar lógica de listado.
-    // 1. En OnGetAsync(), llamar GET /api/puestos con HttpClient (incluir JWT en header).
-    // 2. Deserializar la respuesta en una lista de PuestoDto.
-    // 3. Exponer la lista como propiedad pública para que la vista la itere.
-    // 4. Al hacer clic en un puesto, redirigir a Oferentes/Index?idPuesto={id}.
-
-    public Task OnGetAsync()
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        // TODO Core6 (Fran): Implementar.
-        return Task.CompletedTask;
+        PropertyNameCaseInsensitive = true
+    };
+
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<IndexModel> _logger;
+
+    public IndexModel(IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<IndexModel> logger)
+    {
+        _httpClientFactory = httpClientFactory;
+        _configuration = configuration;
+        _logger = logger;
+    }
+
+    public List<PuestoDto> Puestos { get; private set; } = new();
+
+    public string? ErrorMessage { get; private set; }
+
+    public async Task<IActionResult> OnGetAsync()
+    {
+        // HU Seg1: si no hay sesión iniciada, redirigir al login con el mensaje correspondiente.
+        var token = HttpContext.Session.GetString(LoginModel.SesionToken);
+        if (string.IsNullOrEmpty(token))
+        {
+            return RedirectToPage("/Auth/Login", new { motivo = "requerida" });
+        }
+
+        try
+        {
+            var client = CrearCliente(token);
+            var respuesta = await client.GetFromJsonAsync<ApiResponse<List<PuestoDto>>>("api/puestos", JsonOptions);
+            Puestos = respuesta?.Data ?? new List<PuestoDto>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al consultar los puestos activos desde el Core API.");
+            ErrorMessage = "No fue posible obtener el listado de puestos activos. Intente nuevamente más tarde.";
+        }
+
+        return Page();
+    }
+
+    private HttpClient CrearCliente(string token)
+    {
+        var client = _httpClientFactory.CreateClient();
+        var baseUrl = _configuration["CoreApi:BaseUrl"];
+        client.BaseAddress = new Uri(
+            string.IsNullOrWhiteSpace(baseUrl) ? $"{Request.Scheme}://{Request.Host}" : baseUrl);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        return client;
     }
 }

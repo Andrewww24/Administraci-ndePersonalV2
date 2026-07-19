@@ -20,26 +20,31 @@ else if (!Model.Oferentes.Any())
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Identificación</th>
-                <th>Nombre completo</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var o in Model.Oferentes)
-            {
+    <div class="card">
+        <div class="card-header">
+            Información
+        </div>
+        <table class="table table-striped mb-0">
+            <thead>
                 <tr>
-                    <td>@o.Identificacion</td>
-                    <td>
-                        <a asp-page="/Oferentes/Detalle" asp-route-identificacion="@o.Identificacion" asp-route-idPuesto="@Model.IdPuesto">
-                            @o.NombreCompleto
-                        </a>
-                    </td>
+                    <th>Identificación</th>
+                    <th>Nombre completo</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var o in Model.Oferentes)
+                {
+                    <tr>
+                        <td>@o.Identificacion</td>
+                        <td>
+                            <a asp-page="/Oferentes/Detalle" asp-route-identificacion="@o.Identificacion" asp-route-idPuesto="@Model.IdPuesto">
+                                @o.NombreCompleto
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
 <a asp-page="/Puestos/Index" class="btn btn-secondary mt-3">Regresar</a>

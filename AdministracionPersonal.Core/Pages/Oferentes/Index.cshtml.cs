@@ -29,6 +29,11 @@ public class IndexModel : PageModel
     [BindProperty(SupportsGet = true)]
     public string? Codigo { get; set; }
 
+    // Solo se reenvía hacia el enlace de Core9 (detalle de oferente + crear empleado);
+    // Core2 se sigue consultando por Codigo, no por este valor.
+    [BindProperty(SupportsGet = true)]
+    public int IdPuesto { get; set; }
+
     public List<OferenteAptoDto> Oferentes { get; set; } = new();
 
     public string? ErrorMessage { get; private set; }

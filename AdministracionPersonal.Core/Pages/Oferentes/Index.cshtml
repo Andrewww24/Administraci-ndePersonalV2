@@ -33,7 +33,7 @@ else
                 <tr>
                     <td>@o.Identificacion</td>
                     <td>
-                        <a asp-page="/Oferentes/Detalle" asp-route-identificacion="@o.Identificacion">
+                        <a asp-page="/Oferentes/Detalle" asp-route-identificacion="@o.Identificacion" asp-route-idPuesto="@Model.IdPuesto">
                             @o.NombreCompleto
                         </a>
                     </td>

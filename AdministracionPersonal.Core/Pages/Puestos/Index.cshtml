@@ -7,6 +7,13 @@
 <h2>Puestos activos</h2>
 <p class="text-muted">Seleccione un puesto para ver los oferentes que cumplen sus requisitos.</p>
 
+@if (!string.IsNullOrEmpty(Model.MensajeExito))
+{
+    <div class="alert alert-success" role="alert">
+        @Model.MensajeExito
+    </div>
+}
+
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
     <div class="alert alert-danger" role="alert">

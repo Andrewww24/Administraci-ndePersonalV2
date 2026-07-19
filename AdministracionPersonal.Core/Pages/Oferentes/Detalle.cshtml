@@ -78,6 +78,8 @@
             <input type="hidden" asp-for="IdOferenteEncontrado" />
             <button type="submit" class="btn btn-primary">Crear empleado</button>
         </form>
-        <a class="btn btn-secondary" asp-page="/Oferentes/Index" asp-route-idPuesto="@Model.IdPuesto">Cancelar</a>
+        <a class="btn btn-secondary" asp-page="/Oferentes/Index"
+           asp-route-codigo="@Model.PuestoCodigo"
+           asp-route-idPuesto="@Model.IdPuesto">Cancelar</a>
     </div>
 }

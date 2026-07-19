@@ -48,6 +48,13 @@ public class DetalleModel : PageModel
 
     public OferenteDto? Oferente { get; private set; }
 
+    /// <summary>
+    /// Código del puesto (ej. "PUE-004"), resuelto vía Core1 a partir de <see cref="IdPuesto"/>.
+    /// Necesario porque Core7 (Oferentes/Index) requiere "codigo" para poder listar de nuevo,
+    /// y Core9 solo recibe el id numérico del puesto, no su código.
+    /// </summary>
+    public string? PuestoCodigo { get; private set; }
+
     public string? ErrorMessage { get; private set; }
 
     [TempData]
@@ -163,6 +170,33 @@ public class DetalleModel : PageModel
         {
             _logger.LogError(ex, "Error al consultar el detalle del oferente {Identificacion}.", Identificacion);
             ErrorMessage = "No fue posible obtener el detalle del oferente. Intente nuevamente más tarde.";
+        }
+
+        await CargarCodigoPuestoAsync();
+    }
+
+    /// <summary>
+    /// Resuelve el código del puesto (ej. "PUE-004") consultando Core1, para poder
+    /// reconstruir correctamente el enlace de "Cancelar" hacia Core7 — que exige "codigo"
+    /// y nunca recibe el id numérico. Si falla, se deja en null y el enlace simplemente
+    /// omite ese parámetro (Core7 mostrará su propio mensaje de "indique un código").
+    /// </summary>
+    private async Task CargarCodigoPuestoAsync()
+    {
+        if (IdPuesto <= 0)
+        {
+            return;
+        }
+
+        try
+        {
+            var client = CrearCliente();
+            var respuesta = await client.GetFromJsonAsync<ApiResponse<List<PuestoDto>>>("api/puestos", JsonOptions);
+            PuestoCodigo = respuesta?.Data?.FirstOrDefault(p => p.IdPuesto == IdPuesto)?.Codigo;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al resolver el código del puesto {IdPuesto} para el botón Cancelar.", IdPuesto);
         }
     }
 }

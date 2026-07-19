@@ -35,6 +35,14 @@ public class IndexModel : PageModel
 
     public string? ErrorMessage { get; private set; }
 
+    /// <summary>
+    /// Mensaje de éxito dejado por Core9 (ej. "Empleado creado con éxito") antes de
+    /// redirigir a esta pantalla tras crear un empleado. Usa la misma clave TempData
+    /// ("MensajeExito") que DetalleModel para que el valor viaje entre ambas páginas.
+    /// </summary>
+    [TempData]
+    public string? MensajeExito { get; set; }
+
     public async Task<IActionResult> OnGetAsync()
     {
         // HU Seg1: si no hay sesión iniciada, redirigir al login con el mensaje correspondiente.

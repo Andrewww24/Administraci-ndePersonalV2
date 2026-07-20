@@ -13,7 +13,7 @@
             "commandName": "Project",
             "dotnetRunMessages": true,
             "launchBrowser": true,
-            "launchUrl": "index",
+            "launchUrl": "login",
             "applicationUrl": "http://localhost:5124",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
@@ -23,7 +23,7 @@
             "commandName": "Project",
             "dotnetRunMessages": true,
             "launchBrowser": true,
-            "launchUrl": "index",
+            "launchUrl": "login",
             "applicationUrl": "https://localhost:5124",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
@@ -32,7 +32,7 @@
         "IIS Express": {
             "commandName": "IISExpress",
             "launchBrowser": true,
-            "launchUrl": "index",
+            "launchUrl": "login",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }

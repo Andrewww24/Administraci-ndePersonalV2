@@ -4,82 +4,153 @@
     ViewData["Title"] = "Detalle del oferente";
 }
 
-<h2>Detalle del oferente</h2>
+@* Estilo visual alineado al proyecto de referencia "SitiosPersonal" (mismo patrón de
+   "panel de acciones" + botones circulares usado en su pantalla Empleados/Contratar).
+   Solo afecta esta pantalla (Core9); no se tocó el _Layout.cshtml compartido ni
+   ninguna otra historia de usuario. *@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+<style>
+    .crud-card {
+        border: none;
+        border-radius: 4px;
+        box-shadow: 0 3px 10px rgba(0,0,0,.08);
+    }
+
+    .crud-card-header {
+        background: white;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 16px 20px;
+    }
+
+    .crud-card-title {
+        font-size: 17px;
+        font-weight: 600;
+        color: #243b73;
+        margin: 0;
+    }
+
+    .form-action-panel {
+        background: white;
+        border-left: 4px solid #2563eb;
+        border-radius: 4px;
+        padding: 28px 20px;
+        margin-bottom: 18px;
+        box-shadow: 0 3px 10px rgba(0,0,0,.06);
+    }
+
+    .action-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: none;
+        background: #5b7cfa;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 8px;
+        text-decoration: none;
+    }
+
+        .action-circle:hover {
+            background: #4169e1;
+            color: white;
+        }
+</style>
 
 @if (!string.IsNullOrEmpty(Model.MensajeExito))
 {
-    <div class="alert alert-success" role="alert">
-        @Model.MensajeExito
-    </div>
+    <div class="alert alert-success">@Model.MensajeExito</div>
 }
 
 @if (!string.IsNullOrEmpty(Model.ErrorMessage))
 {
-    <div class="alert alert-danger" role="alert">
-        @Model.ErrorMessage
-    </div>
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
 }
 
 @if (Model.Oferente is not null)
 {
     var oferente = Model.Oferente;
-    <div class="card">
-        <div class="card-header">
-            Información
+
+    <form method="post" asp-page-handler="CrearEmpleado">
+        <input type="hidden" asp-for="Identificacion" />
+        <input type="hidden" asp-for="IdPuesto" />
+        <input type="hidden" asp-for="IdOferenteEncontrado" />
+
+        <div class="form-action-panel">
+            <a class="action-circle"
+               asp-page="/Oferentes/Index"
+               asp-route-codigo="@Model.PuestoCodigo"
+               asp-route-idPuesto="@Model.IdPuesto"
+               title="Cancelar">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <button type="submit" class="action-circle" title="Crear empleado">
+                <i class="fas fa-user-check"></i>
+            </button>
         </div>
-        <div class="card-body">
-            <dl class="row mb-0">
-                <dt class="col-sm-3">Identificación</dt>
-                <dd class="col-sm-9">@oferente.Identificacion (@oferente.TipoIdentificacion)</dd>
 
-                <dt class="col-sm-3">Nombre completo</dt>
-                <dd class="col-sm-9">@oferente.NombreCompleto</dd>
+        <div class="crud-card card">
+            <div class="crud-card-header">
+                <h4 class="crud-card-title"><i class="fas fa-id-card"></i> Detalle del Oferente</h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted mb-0">Identificación</label>
+                        <div class="fw-bold">@oferente.Identificacion (@oferente.TipoIdentificacion)</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted mb-0">Nombre completo</label>
+                        <div class="fw-bold">@oferente.NombreCompleto</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted mb-0">Fecha de nacimiento</label>
+                        <div class="fw-bold">@oferente.FechaNacimiento.ToString("dd/MM/yyyy")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted mb-0">Dirección</label>
+                        <div class="fw-bold">@(oferente.Direccion ?? "—")</div>
+                    </div>
 
-                <dt class="col-sm-3">Fecha de nacimiento</dt>
-                <dd class="col-sm-9">@oferente.FechaNacimiento.ToString("dd/MM/yyyy")</dd>
+                    @if (!string.IsNullOrEmpty(oferente.Distrito))
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label text-muted mb-0">Ubicación</label>
+                            <div class="fw-bold">@oferente.Distrito, @oferente.Canton, @oferente.Provincia</div>
+                        </div>
+                    }
 
-                <dt class="col-sm-3">Dirección</dt>
-                <dd class="col-sm-9">@(oferente.Direccion ?? "—")</dd>
+                    @if (!string.IsNullOrEmpty(oferente.Correos))
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label text-muted mb-0">Correo(s)</label>
+                            <div class="fw-bold">@oferente.Correos</div>
+                        </div>
+                    }
 
-                @if (!string.IsNullOrEmpty(oferente.Distrito))
-                {
-                    <dt class="col-sm-3">Ubicación</dt>
-                    <dd class="col-sm-9">@oferente.Distrito, @oferente.Canton, @oferente.Provincia</dd>
-                }
+                    @if (!string.IsNullOrEmpty(oferente.Telefonos))
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label text-muted mb-0">Teléfono(s)</label>
+                            <div class="fw-bold">@oferente.Telefonos</div>
+                        </div>
+                    }
 
-                @if (!string.IsNullOrEmpty(oferente.Correos))
-                {
-                    <dt class="col-sm-3">Correo(s)</dt>
-                    <dd class="col-sm-9">@oferente.Correos</dd>
-                }
+                    @if (!string.IsNullOrEmpty(oferente.PuestosPostulados))
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label text-muted mb-0">Puestos postulados</label>
+                            <div class="fw-bold">@oferente.PuestosPostulados</div>
+                        </div>
+                    }
 
-                @if (!string.IsNullOrEmpty(oferente.Telefonos))
-                {
-                    <dt class="col-sm-3">Teléfono(s)</dt>
-                    <dd class="col-sm-9">@oferente.Telefonos</dd>
-                }
-
-                @if (!string.IsNullOrEmpty(oferente.PuestosPostulados))
-                {
-                    <dt class="col-sm-3">Puestos postulados</dt>
-                    <dd class="col-sm-9">@oferente.PuestosPostulados</dd>
-                }
-
-                <dt class="col-sm-3">Fecha de registro</dt>
-                <dd class="col-sm-9">@oferente.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</dd>
-            </dl>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted mb-0">Fecha de registro</label>
+                        <div class="fw-bold">@oferente.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div class="mt-4">
-        <form method="post" asp-page-handler="CrearEmpleado" class="d-inline">
-            <input type="hidden" asp-for="Identificacion" />
-            <input type="hidden" asp-for="IdPuesto" />
-            <input type="hidden" asp-for="IdOferenteEncontrado" />
-            <button type="submit" class="btn btn-primary">Crear empleado</button>
-        </form>
-        <a class="btn btn-secondary" asp-page="/Oferentes/Index"
-           asp-route-codigo="@Model.PuestoCodigo"
-           asp-route-idPuesto="@Model.IdPuesto">Cancelar</a>
-    </div>
+    </form>
 }

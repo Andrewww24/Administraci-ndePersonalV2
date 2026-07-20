@@ -4,45 +4,98 @@
     ViewData["Title"] = "Puestos activos";
 }
 
-<h2>Puestos activos</h2>
-<p class="text-muted">Seleccione un puesto para ver los oferentes que cumplen sus requisitos.</p>
+@* Estilo visual alineado al proyecto de referencia "SitiosPersonal" (colores, tarjetas,
+   tabla e íconos). Solo afecta esta pantalla (Core6); no se tocó el _Layout.cshtml
+   compartido ni ninguna otra historia de usuario. *@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+<style>
+    .crud-card {
+        border: none;
+        border-radius: 4px;
+        box-shadow: 0 3px 10px rgba(0,0,0,.08);
+    }
 
-@if (!string.IsNullOrEmpty(Model.MensajeExito))
-{
-    <div class="alert alert-success" role="alert">
-        @Model.MensajeExito
-    </div>
-}
+    .crud-card-header {
+        background: white;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 16px 20px;
+    }
 
-@if (!string.IsNullOrEmpty(Model.ErrorMessage))
-{
-    <div class="alert alert-danger" role="alert">
-        @Model.ErrorMessage
+    .crud-card-title {
+        font-size: 17px;
+        font-weight: 600;
+        color: #243b73;
+        margin: 0;
+    }
+
+    .table thead {
+        background: #343a40;
+        color: white;
+    }
+
+    .table td,
+    .table th {
+        vertical-align: middle;
+    }
+
+    .btn-icon {
+        width: 33px;
+        height: 33px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<div class="crud-card card">
+    <div class="crud-card-header d-flex justify-content-between align-items-center">
+        <h4 class="crud-card-title"><i class="fas fa-briefcase"></i> Puestos Activos</h4>
     </div>
-}
-else if (!Model.Puestos.Any())
-{
-    <div class="alert alert-info" role="alert">
-        No hay puestos activos en este momento.
-    </div>
-}
-else
-{
-    <div class="card">
-        <div class="card-header">
-            Información
+    <div class="card-body">
+        @if (!string.IsNullOrEmpty(Model.MensajeExito))
+        {
+            <div class="alert alert-success">@Model.MensajeExito</div>
+        }
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">@Model.ErrorMessage</div>
+        }
+        <p class="text-muted">Seleccione un puesto para ver los oferentes que cumplen sus requisitos.</p>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Puesto</th>
+                        <th style="width:120px;" class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Puestos.Any())
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">No hay puestos activos en este momento.</td>
+                        </tr>
+                    }
+                    @foreach (var puesto in Model.Puestos)
+                    {
+                        <tr>
+                            <td>@puesto.Codigo</td>
+                            <td>@puesto.Nombre</td>
+                            <td class="text-center">
+                                <a asp-page="/Oferentes/Index"
+                                   asp-route-codigo="@puesto.Codigo"
+                                   asp-route-idPuesto="@puesto.IdPuesto"
+                                   class="btn btn-primary btn-sm btn-icon"
+                                   title="Ver oferentes aptos">
+                                    <i class="fas fa-users"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
-        <ul class="list-group list-group-flush">
-            @foreach (var puesto in Model.Puestos)
-            {
-                <li class="list-group-item">
-                    <a asp-page="/Oferentes/Index"
-                       asp-route-codigo="@puesto.Codigo"
-                       asp-route-idPuesto="@puesto.IdPuesto">
-                        @puesto.Nombre
-                    </a>
-                </li>
-            }
-        </ul>
     </div>
-}
+</div>
